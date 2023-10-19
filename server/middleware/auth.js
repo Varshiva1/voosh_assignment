@@ -2,23 +2,17 @@
 
 const jwt = require('jsonwebtoken');
 // const config = require('./config');
-
+const JWT_SECRET='voosh'
 const authMiddleware = (req, res, next) => {
-  // Get the token from the request header
-  const token = req.header('x-auth-token');
+  const token = req.header('Authorization');
+  console.log(token);
+  if (!token) return res.status(400).json({ message: 'Access denied',status:'400' });
 
-  if (!token) {
-    return res.status(401).json({ msg: 'Authorization denied' });
-  }
-
-  try {
-    // Verify and decode the token
-    const decoded = jwt.verify(token, config.jwtSecret);
-    req.user = decoded.user;
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Invalid token' });
+    req.user = user;
     next();
-  } catch (error) {
-    res.status(401).json({ msg: 'Token is not valid' });
-  }
+  });
 };
 
 module.exports = authMiddleware;

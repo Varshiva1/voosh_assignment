@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   name: String,
   phoneNumber: String,
   password: String,
-  googleId: String,
+  login_by: String,
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -1,9 +1,7 @@
 const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-// const config = require('../config');
 
-// Controller for registering a new user
 exports.registerUser = async (req, res) => {
   try {
     const { name, phoneNumber, password } = req.body;
@@ -30,18 +28,17 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// Controller for user login
+
 exports.loginUser = async (req, res) => {
   const { phoneNumber, password, login_by } = req.body;
   
   try {
-    const user = await User.findOne({ phoneNumber });
-
+    const user = await User.findOneAndUpdate({ phoneNumber:phoneNumber },{login_by: "mannual"});
+console.log(user)
     if (!user) {
       return res.status(401).json({ error: 'User not found. Please register.' });
     }
 
-    // Check the login_by parameter and handle Google Sign-In logic if needed
     
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
@@ -55,10 +52,14 @@ exports.loginUser = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, config.jwtSecret, { expiresIn: '1h' }, (error, token) => {
-      if (error) throw error;
-      res.json({ token });
-    });
+const JWT_SECRET="voosh"
+
+    const token = jwt.sign( payload, JWT_SECRET,{
+        expiresIn: "10h",
+      }
+    );
+      // Response JWT token
+    res.json({ token });
   } catch (error) {
     res.status(500).json({ error: 'Login failed.' });
   }
