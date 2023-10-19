@@ -9,11 +9,12 @@ const Login = () => {
     const cookies = new Cookies();
      const [phoneNo,setPhoneNo] = useState("");
     const [password,setPassword] = useState("");
+    const [loginby,setLoginBy] = useState("");
     const [error,setError] = useState(false);
 
     const handleSubmit = async (e)=>{
         e.preventDefault()
-        const data = {phone:phoneNo, password,login_by}
+        const data = {phone:phoneNo, password,loginby}
         console.log(data)
         const res = await fetch("http://localhost:5000/login-user",{
             method: "POST",
