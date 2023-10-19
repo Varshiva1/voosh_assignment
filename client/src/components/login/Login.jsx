@@ -13,7 +13,7 @@ const Login = () => {
 
     const handleSubmit = async (e)=>{
         e.preventDefault()
-        const data = {phone:phoneNo, password}
+        const data = {phone:phoneNo, password,login_by}
         console.log(data)
         const res = await fetch("http://localhost:5000/login-user",{
             method: "POST",
