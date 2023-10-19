@@ -7,17 +7,13 @@ const bcrypt = require('bcrypt');
 exports.registerUser = async (req, res) => {
   try {
     const { name, phoneNumber, password } = req.body;
-    
-    // Validate input data here
-    
-    // Check if the user with the provided phone number already exists
+   
     const existingUser = await User.findOne({ phoneNumber });
 
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists with this phone number.' });
     }
 
-    // Hash the password before saving it
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
