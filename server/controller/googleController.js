@@ -1,9 +1,11 @@
 // const express = require("express");
 const firebase = require("firebase");
+const admin = require('firebase-admin');
+
 // const app = express();
 // app.use(express.json());
 
-// const auth=require("firebase")
+const auth=require("firebase")
 
 
 
@@ -47,52 +49,33 @@ exports.signup=async(req,res)=>{
   }
 
 //------------------signin----------------------------------------
-
-exports.signin=async(req,res)=>{
-
-  if(!req.body.email||!req.body.email){
-        return res.send({msg:"required"})
-      }
-      
-        firebase.auth().signInWithEmailAndPassword(req.body.email,req.body.password)
-        .then((User)=>{
-          return res.status(200).json({success: true,message:"Sucessfully signed in"})
-        })   
-.catch(function(error){
-  let errorCode=error.code;
-  let errorMessage=error.message;
-  if (errorCode=="auth/user-not-found"){
-    res.status(401).send({error:"User not found"})
-  }else{
-    res.status(401).send({error:"User not found"})
-  }
+exports.signin = async (req, res) => {
+    try {
+      const { email, password } = req.body;
   
-})
-}
-//------------------------resetpasswordlink-------------------------------
- 
-
-exports.resetpass=async(req,res)=>{
-    
-      const data = req.body.email;
-      if(!data){
-        return res.send({msg:"no user found"})
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Both email and password are required' });
       }
-        firebase
-       .auth()
-        .sendPasswordResetEmail(data).then(function(){
-          res.send({success: true,message:"reset password email sent"})
+  
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          return res.status(200).json({ success: true, message: 'Successfully signed in' });
         })
-
-      .catch(function(error){
-       let errorCode=error.code;
-        let errorMessage=error.message;
-        if (errorCode=="auth/not-found"){
-          res.status(401).send({error:errorMessage})
-        }else{
-          res.status(401).send({error:errorMessage})
-        }
-        
-      })
+        .catch(function (error) {
+          let errorCode = error.code;
+          let errorMessage = error.message;
   
-  }
+          if (errorCode === 'auth/user-not-found') {
+            return res.status(401).json({ error: 'User not found' });
+          } else {
+            return res.status(401).json({ error: 'Invalid username or password' });
+          }
+        });
+    } catch (error) {
+      // Handle other errors, if any
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+  
